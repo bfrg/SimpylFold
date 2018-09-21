@@ -14,3 +14,6 @@ augroup END
 if exists('g:SimpylFold_docstring_preview') && g:SimpylFold_docstring_preview
     setlocal foldtext=foldtext()\ .\ SimpylFold#FoldText()
 endif
+
+command! -bang -buffer SimpylFoldDocstrings let b:SimpylFold_fold_docstring = <bang>1 | call SimpylFold#Recache()
+command! -bang -buffer SimpylFoldImports let b:SimpylFold_fold_import = <bang>1 | call SimpylFold#Recache()

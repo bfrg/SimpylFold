@@ -12,7 +12,7 @@ let s:import_end_paren_re = ')\s*$'
 let s:import_end_esc_re = '[^\\]$'
 
 " Initialize buffer
-function! SimpylFold#BufferInit() abort
+function SimpylFold#BufferInit() abort
     if &filetype ==# 'pyrex' || &filetype ==# 'cython'
         let b:SimpylFold_def_re =
             \ '\v^\s*%(%(class|%(async\s+)?def|cdef|cpdef|ctypedef)\s+\w+)|cdef\s*:'
@@ -36,7 +36,7 @@ function! SimpylFold#BufferInit() abort
 endfunction
 
 " Get spaces per indent setting
-function! s:indent_spaces() abort
+function s:indent_spaces() abort
     if &softtabstop > 0
         return &softtabstop
     elseif &softtabstop < 0 && &shiftwidth > 0
@@ -46,7 +46,7 @@ function! s:indent_spaces() abort
 endfunction
 
 " Calculate indent
-function! s:indent(line, ind_spaces) abort
+function s:indent(line, ind_spaces) abort
     let ind = matchend(a:line, '^ *') / a:ind_spaces
     if ind == 0
         let ind = matchend(a:line, '^\t*')
@@ -58,7 +58,7 @@ function! s:indent(line, ind_spaces) abort
     return ind
 endfunction
 
-function! s:defs_stack_prune(cache, defs_stack, ind) abort
+function s:defs_stack_prune(cache, defs_stack, ind) abort
     for idx in range(len(a:defs_stack))
         let ind_stack = a:cache[(a:defs_stack[idx])]['indent']
         if a:ind == ind_stack
@@ -88,7 +88,7 @@ function! s:blanks_adj(cache, lnum, foldlevel) abort
 endfunction
 
 " Check if previous lines are blanks or comments
-function! s:are_lines_prev_blank(cache, lnum) abort
+function s:are_lines_prev_blank(cache, lnum) abort
     let lnum_prev = a:lnum - 1
     while lnum_prev != 0
         if !a:cache[lnum_prev]['is_blank'] && !a:cache[lnum_prev]['is_comment']
@@ -103,7 +103,7 @@ endfunction
 " 1.1x slower when `matchstrpos` exists
 " 2.5x slower otherwise
 let s:exists_matchstrpos = exists('*matchstrpos')
-function! s:matchstrpos(expr, pat) abort
+function s:matchstrpos(expr, pat) abort
     if s:exists_matchstrpos
         return matchstrpos(a:expr, a:pat)
     else
@@ -118,7 +118,7 @@ endfunction
 "     - bool: Found multiple strings?
 "     - string: End regex.
 "     - string: Everything before first match.
-function! s:multi_string(line, first_re, in_string) abort
+function s:multi_string(line, first_re, in_string) abort
     " 2x performance for general case
     if a:line !~# '[''"]'
         return [a:in_string, 0, 0, '', '']
@@ -172,7 +172,7 @@ function! s:multi_string(line, first_re, in_string) abort
 endfunction
 
 " Create a new cache
-function! s:cache() abort
+function s:cache() abort
     let cache = [{}]  " With padding for lnum offset
     let lines = getbufline(bufnr('%'), 1, '$')
     let lnum_last = len(lines)
@@ -352,7 +352,7 @@ function! s:cache() abort
 endfunction
 
 " Compute foldexpr for Python code
-function! SimpylFold#FoldExpr(lnum) abort
+function SimpylFold#FoldExpr(lnum) abort
     if !exists('b:SimpylFold_cache')
         let b:SimpylFold_cache = s:cache()
     endif
@@ -360,7 +360,7 @@ function! SimpylFold#FoldExpr(lnum) abort
 endfunction
 
 " Recache the buffer
-function! SimpylFold#Recache() abort
+function SimpylFold#Recache() abort
     if exists('b:SimpylFold_cache')
         unlet b:SimpylFold_cache
     endif
@@ -368,7 +368,7 @@ endfunction
 
 " Compute foldtext by obtaining the first line of the docstring for
 " the folded class or function, if any exists
-function! SimpylFold#FoldText() abort
+function SimpylFold#FoldText() abort
     let lnum = v:foldstart
     let line = getline(lnum)
     let string_match = matchlist(line, s:docstring_re)
